@@ -37,8 +37,8 @@ num_files = length(data_files);
 for ii = 1:num_files
 
 %%% BUCLE %%%
-matName  = data_files(ii).name;  % "typName.mat"
-typName = matName(1:end-4);      % 
+fileName  = data_files(ii).name;  % "typName.mat"
+typName = fileName(1:end-4);      % 
 %%% BUCLE %%%
 
 % typName = input('Enter full name of data (i.e. RSWE_2lay_500Hz): ', 's');

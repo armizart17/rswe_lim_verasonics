@@ -2,15 +2,20 @@ function [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(vz, win, dx , dz, correc)
 % function [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(vz, win, dx , dz, correc)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local wavenumber estimator by Curve Fitting LIM version
-% Inputs:  vz - Complex matrix with magnitude and phase info from RSWField
+% Inputs:  vz       - Complex matrix with magnitude and phase info from RSWField
 %          window   - Size of the windows kernel.
-%          dx - Resolution of the x-axis (lateral) of the signal
-%          dz - Resolution of the z-axis (axial) of the signal
-% Outputs: Kx,Kz - Spatial frequency or wavenumber (k)
-%          Rx,Rz - R - square (k)
+%          dx       - Resolution of the x-axis (lateral) of the signal
+%          dz       - Resolution of the z-axis (axial) of the signal
+%          correct  - should be xcorr(ones(win(1), win(2))
+% Outputs: Kx,Kz    - Spatial frequency or wavenumber (k)
+%          Rx,Rz    - R - square (k)
 % Author: E.A.M.Z. adapted from LIM code
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+    % If correc is not provided, calculate it using the default value
+    if nargin < 5
+        correc = xcorr(ones(win(1), win(2)));
+    end
+    
     [m,n] = size(vz);
     M = win(1); 
     N = win(2); 

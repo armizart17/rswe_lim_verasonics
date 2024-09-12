@@ -37,4 +37,10 @@ function [wavelength, k] = calc_wvlength_k(sws, freq, dinf)
     
     % Calculate wave number (in radians per meter)
     k = 2 * pi * freq / sws;
+
+    % Print results for visualization
+    fprintf(['SWS: %.2f [m/s] | Freq: %d [Hz] | K: %.2f [rad/m] | wvlength:  %.2f [mm] ' ...
+        '| Window size Ax: %d | La: %d \n'], ...
+     sws, freq, round(k), round(1e3*wavelength.meters), round(wavelength.pix_axi), round(wavelength.pix_lat)  );
+
 end

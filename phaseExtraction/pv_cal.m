@@ -96,5 +96,5 @@ dinf.u_rows = [dinf.Bscan_rows(1) + (ROI.ROI_ax(1)-1) ...
 	           dinf.Bscan_rows(1) + (ROI.ROI_ax(1)-1) + (numel(ROI.ROI_ax)-1)];           
 dinf.u_cols = [dinf.Bscan_cols(1) + (ROI.ROI_lat(1)-1) ...
 	           dinf.Bscan_cols(1) + (ROI.ROI_lat(1)-1) + (numel(ROI.ROI_lat)-1)];
-           
+disp('Finish calculating particle velocity signals.')           
 end
