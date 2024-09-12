@@ -25,12 +25,12 @@ function [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(vz, win, dx , dz, correc)
     ev_al_pos_z = al_pos_z(ev_index_z);  % even positions from allow locations in axial direction
     search_area_z = -round(M/2)+1:round(M/2)-1; % search index from kernel:lateral
     
-    % Preallocate matrices for Rx, Rz, Kx, Kz
-    num_pos_z = length(ev_al_pos_z);
-    Rx = zeros(num_pos_z, n);  % Lateral R-squared values
-    Rz = zeros(num_pos_z, n);  % Axial R-squared values
-    Kx = zeros(num_pos_z, n);  % Lateral wavenumbers
-    Kz = zeros(num_pos_z, n);  % Axial wavenumbers
+    % % Preallocate matrices for Rx, Rz, Kx, Kz
+    % num_pos_z = length(ev_al_pos_z);
+    % Rx = zeros(num_pos_z, n);  % Lateral R-squared values
+    % Rz = zeros(num_pos_z, n);  % Axial R-squared values
+    % Kx = zeros(num_pos_z, n);  % Lateral wavenumbers
+    % Kz = zeros(num_pos_z, n);  % Axial wavenumbers
 
     for k = 1:length(ev_al_pos_z)
     %  2D cross-corralation of the reverberant particle velocity. 

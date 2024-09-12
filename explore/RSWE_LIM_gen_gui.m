@@ -150,12 +150,12 @@ if mod(win(2), 2) == 0
    win(2) = win(2) + 1; 
 end
 
-correc = xcorr(ones(win(1), win(2))); % it is default 
+correc = xcorr2(ones(win(1), win(2))); % it is default 
 dx = dinf.dx; dz = dinf.dz;
 
 pv_field = Frames0;  
 og_size = size(pv_field);
-mirror_pv = padarray(pv_field, (win-1)/2, 'symmetric');
+mirror_pv = padarray(pv_field, (win-1)/2, 'symmetric','both');
 
 tic 
 [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
