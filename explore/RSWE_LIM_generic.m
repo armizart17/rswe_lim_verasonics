@@ -160,7 +160,7 @@ og_size = size(pv_field);
 mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
 
 sws_maow = sws_generator(mirror_frame,w_kernel,freq,2,dinf,og_size,10,5);
-sws_maow_big = bigImg(sws_pg_tv, Bmode); % resize to Bmode size
+sws_maow_big = bigImg(sws_maow, Bmode); % resize to Bmode size
 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
 vizMAOW = Visualizer(visDefault);
