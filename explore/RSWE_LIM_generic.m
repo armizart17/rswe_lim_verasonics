@@ -16,8 +16,8 @@ addpath(genpath(pwd));
 clear all, clc
 close all;
 
-baseDir = './DATA_SR';
-folderAcqName = '09-08' ; 
+baseDir = 'D:\emirandaz\rswe\data_lim';     %%%% *CHANGE IT IF NEED IT %%%%
+folderAcqName = '05-09' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
@@ -28,21 +28,24 @@ fprintf('==============================================================\n');
 % outDir = ; % for Results 
 %% Setup TypicalName of Data
 
-idName = input('Enter ID name of data (i.e. 2lay_500): ', 's');
+typName = input('Enter full name of data (i.e. RSWE_2lay_500Hz): ', 's');
 
-typName = "RSWE_"+idName+".mat";
+% typName = "RSWE_"+idName+".mat"; % old version
+
+pos_ = strfind(typName, '_');
+posHz = strfind(typName, 'Hz');
+
+idName = typName(pos_(1)+1 : posHz+1);
 
 fprintf('==============================================================\n');
 fprintf('Data Full Name: %s\n', typName)
+fprintf('Data ID Name: %s\n', idName)
 fprintf('==============================================================\n');
 
-% Find the position of "Hz"
-hzPosition = strfind(idName, 'Hz');
-
 % Extract the four digits before "Hz"
-freq = str2double( idName(hzPosition-4:hzPosition-1) ); % frequency usually represented by 4 
+freq = str2double( typName(posHz-4:posHz-1) ); % frequency usually represented by 4digits 
 %% LOAD DATA AND BMODE VALIDATION
-load(fullfile(dataDir, typName));
+load(fullfile(dataDir, typName +".mat"));
 
 dinf.fc = Trans.frequency*1e6;
 dinf.c0 = 1540; dinf.wl = dinf.c0/dinf.fc;
@@ -149,7 +152,7 @@ vizCF.visualize(); % This will plot
 
 %% WAVE APPROXIMATION (MAOW)
 methodName = 'MAOW';
-window = 21; 
+window = 25; 
 w_kernel = [window, window];
 
 pv_field = Frames0;  
