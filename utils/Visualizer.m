@@ -80,7 +80,7 @@ classdef Visualizer
             
             % Plot B-mode image
             figure;
-            set(gcf, 'Position', [300 300 600 700])
+            set(gcf, 'Position', [10 10 600 700])
             subimage(scaleFactor* obj.x, scaleFactor* obj.z, ...
                      256 * mat2gray(obj.BmodeFull, obj.caxis_bmode), gray(256));
             hold on;

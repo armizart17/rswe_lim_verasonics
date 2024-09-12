@@ -33,6 +33,7 @@ fprintf('==============================================================\n');
 data_files = dir([dataDir,'/*.mat']);
 num_files = length(data_files);
 
+% num_files = [1];
 for ii = 1:num_files
 
 %%% BUCLE %%%
@@ -113,7 +114,8 @@ f_tol = 50;   % [Hz] tolerance for +/-2*f_tol
 % % set(gca, "clim", [1, 5])
 % subplot(122), 
 % imagesc(xdim*1e2, ydim*1e2, angle(Frames0)), title('Phase'), axis("tight"), colormap('default')
-% 
+% xlabel('Lateral [cm]'), ylabel('Axial [cm]')
+
 % figure(), 
 % set(gcf, 'units', 'Normalized', 'Position', [0 0.1 0.45 0.4])
 % sgtitle(['Frames1 ID: ', idName], 'Interpreter', 'none')
@@ -136,35 +138,96 @@ visDefault.caxis_bmode = [-60 0];   % Color axis limits for B-mode
 visDefault.caxis_img = [0 4.5];     % Color axis limits for color (SWS)
 visDefault.fact_transparency = 0.6; % Example transparency factor
 
-%% WAVE APPROXIMATION (MAOW)
+%% CALCULATION OF WAVELENGTH
+sws_phantom = 4.5; % asume 4.5m/s
+[wvlength, wvnumber] = calc_wvlength_k(sws_phantom, freq, dinf);
 
-methodName = 'MAOW';
-window = 61; 
-w_kernel = [window, window];
+fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
+     sws_phantom, freq, round(wvlength.pix_axi), round(wvlength.pix_lat)  );
 
-pv_field = Frames0;  
-og_size = size(pv_field);
-mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
-
-sws_maow = sws_generator(mirror_frame,w_kernel,freq,2,dinf,og_size,10,5);
-sws_maow_big = bigImg(sws_maow, Bmode); % resize to Bmode size
-
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-vizMAOW = Visualizer(visDefault);
-
-vizMAOW = vizMAOW.setROI(xdim, ydim, sws_maow_big);
-
-titleName = strcat(methodName, ' ID-', idName);
-vizMAOW = vizMAOW.setTitle(titleName);
-vizMAOW = vizMAOW.setUnits('mm');
-
-vizMAOW.visualize(); % This will plot 
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+%% CURVE FITTING (CF) "VERSION EMZ"
+% methodName = 'CF';
+% window = 21; 
+% 
+% Fix to 1.5 wv 
+% factCF = 1.5;
+% window = round(factCF*wvlength.pix_axi); 
+% Make it odd by adding 1 if it's even
+% if mod(window, 2) == 0
+%    window = window + 1; 
+% end
+% 
+% w_kernel = [window, window];
+% 
+% pv_field = Frames0;  
+% og_size = size(pv_field);
+% mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
+% 
+% tic
+% [k_z,R_ax,k_x,R_lat,k,sws_cf] = theoretical_fitting(mirror_frame,w_kernel,freq,dinf,og_size);
+% sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
+% tt = toc;
+% fprintf('Time passed CF %.4f\n', tt)
+% %%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizCF = Visualizer(visDefault);
+% 
+% vizCF = vizCF.setROI(xdim, ydim, sws_cf_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizCF = vizCF.setTitle(titleName);
+% vizCF = vizCF.setUnits('mm');
+% 
+% vizCF.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% % WAVE APPROXIMATION (MAOW)
+% 
+% methodName = 'MAOW';
+% 
+% Fix to 1.5 wv 
+% factMaow = 1.5;
+% window = round(factMaow*wvlength.pix_axi); 
+% Make it odd by adding 1 if it's even
+% if mod(window, 2) == 0
+%    window = window + 1; 
+% end
+%  
+% w_kernel = [window, window];
+% 
+% pv_field = Frames0;  
+% og_size = size(pv_field);
+% mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
+% 
+% tic
+% sws_maow = sws_generator(mirror_frame,w_kernel,freq,2,dinf,og_size,10,5);
+% sws_maow_big = bigImg(sws_maow, Bmode); % resize to Bmode size
+% tt = toc;
+% fprintf('Time passed MAOW %.4f\n', tt)
+% 
+% %%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizMAOW = Visualizer(visDefault);
+% 
+% vizMAOW = vizMAOW.setROI(xdim, ydim, sws_maow_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizMAOW = vizMAOW.setTitle(titleName);
+% 
+% vizMAOW = vizMAOW.setUnits('mm');
+% 
+% vizMAOW.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
 
 %% PHASE GRADIENT LEAST SQUARES ORIGINAL PAPER
 methodName = 'PG-LS';
 stride = 2; % Stride for window-based method
-window = 31; 
+% window = 31;
+
+% Fix to 0.75 wv 
+factPG = 0.5;
+window = round(factPG*wvlength.pix_axi); 
+% Make it odd by adding 1 if it's even
+if mod(window, 2) == 0
+   window = window + 1; 
+end
 w_kernel = [window, window];
 
 pv_field = Frames0;  
@@ -191,8 +254,13 @@ vizPGLS.visualize(); % This will plot
 %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
 methodName = 'PG-TV';
 
-stride = 2; % Stride for window-based method
-window = 31; 
+% Fix to 0.75 wv 
+factPG = 0.25;
+window = round(factPG*wvlength.pix_axi); 
+% Make it odd by adding 1 if it's even
+if mod(window, 2) == 0
+   window = window + 1; 
+end
 w_kernel = [window, window];
 
 pv_field = Frames0;  
@@ -205,7 +273,7 @@ sws_pg = (2*pi*freq)./grad_l2;
 sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
 
 % TV Denoising
-mu = 10^4;
+mu = 10;
 tol = 1e-4;
 M = size_out(1); N = size_out(2);
 [b_opt] = IRLS_TV_simple(grad_l2(:),speye(M*N),mu,M,N,tol,ones(size(M*N)),ones(M*N,1));

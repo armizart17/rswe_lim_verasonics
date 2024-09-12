@@ -1,6 +1,7 @@
 function sws_matrix = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Functition that yields the shear wave speed of a region with the 
+% function sws_matrix = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
+% Function that yields the shear wave speed of a region with the 
 % approximation method. 
 % 
 % 
@@ -46,20 +47,20 @@ function sws_matrix = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
             %center = auto_matrix(window(1),window(2));
 
             z_vector = auto_matrix(:,window(2))'; % Axial vector from the center of the autocorrelation kernel
-            z_vector = z_vector/max(real(z_vector)); % WE CHOOSE MAX AMZ
-%             z_vector = z_vector/real(z_vector(window(1)));
-            %center_z = z_vector(window(1));
+%             z_vector = z_vector/max(real(z_vector)); % WE CHOOSE MAX AMZ
+            z_vector = z_vector/real(z_vector(window(1))); %*
+            center_z = z_vector(window(1));%*
             z_lag = z_vector(window(1) - d_n);
-            %k_z(ii,jj) = sqrt( c_z*( 1 - real(z_lag)/real(center_z) ) ); % Axial wavenumber matrix calculation with the approximation
-            k_z(ii,jj) = sqrt( c_z*( 1 - real(z_lag) ) ); % Axial wavenumber matrix calculation with the approximation
+            k_z(ii,jj) = sqrt( c_z*( 1 - real(z_lag)/real(center_z) ) ); % Axial wavenumber matrix calculation with the approximation %*
+%             k_z(ii,jj) = sqrt( c_z*( 1 - real(z_lag) ) ); % Axial wavenumber matrix calculation with the approximation
 
             x_vector = auto_matrix(window(1),:); % Lateral vector from the center of the autocorrelation kernel
-            x_vector = x_vector/max(real(x_vector)); % WE CHOOSE MAX AMZ
-%             x_vector = x_vector/real(x_vector(window(2)));
-            %center_x = x_vector(window(2));
+%             x_vector = x_vector/max(real(x_vector)); % WE CHOOSE MAX AMZ
+            x_vector = x_vector/real(x_vector(window(2))); %*
+            center_x = x_vector(window(2)); %*
             x_lag = x_vector(window(2) - d_n);
-            %k_x(ii,jj) = sqrt( c_x*( 1 - real(x_lag)/real(center_x) ) ); % Lateral wavenumber matrix calculation with the approximation
-            k_x(ii,jj) = sqrt( c_x*( 1 - real(x_lag) ) ); % Lateral wavenumber matrix calculation with the approximation
+            k_x(ii,jj) = sqrt( c_x*( 1 - real(x_lag)/real(center_x) ) ); % Lateral wavenumber matrix calculation with the approximation %*
+%             k_x(ii,jj) = sqrt( c_x*( 1 - real(x_lag) ) ); % Lateral wavenumber matrix calculation with the approximation
 
         end
     end

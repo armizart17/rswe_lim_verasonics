@@ -1,4 +1,5 @@
 function [k_z,R_ax,k_x,R_lat,k,sws_matrix] = theoretical_fitting(u,window,f_v,dinf,og_size)
+% function [k_z,R_ax,k_x,R_lat,k,sws_matrix] = theoretical_fitting(u,window,f_v,dinf,og_size)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Function that yields the shear wave speed of a region with the 
 % curve fitting method. Its corresponding parameters of goodness of Fit
@@ -17,7 +18,7 @@ function [k_z,R_ax,k_x,R_lat,k,sws_matrix] = theoretical_fitting(u,window,f_v,di
 %          R_lat       - Goodness of Fit matrix for lateral direction
 %          k           - Average wavenumber matrix 
 %          sws_matrix  - Resulting shear wave speed matrix 
-
+% Author: E.A.M.Z
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 
     res_z = dinf.dz; % Axial resolution
@@ -56,7 +57,7 @@ function [k_z,R_ax,k_x,R_lat,k,sws_matrix] = theoretical_fitting(u,window,f_v,di
             x_vector = real(auto_matrix(window(1),:)); % Lateral vector from the center of the autocorrelation kernel
             
             %% To exclude oscillations located far from the center (From Ormachea code - optional)
-            track = 0.005;
+%             track = 0.005;
 %             [z_axis2,z_vector2,x_axis2,x_vector2] = reduce_axis(track,z_axis,z_vector,x_axis,x_vector);
             %%
             z_axis2 = z_axis;
