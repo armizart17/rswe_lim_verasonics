@@ -202,7 +202,7 @@ vizPGLS.visualize(); % This will plot
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
 
 %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
-methodName = 'PG-TNV';
+methodName = 'PG-TV';
 
 stride = 2; % Stride for window-based method
 window = 41; 
