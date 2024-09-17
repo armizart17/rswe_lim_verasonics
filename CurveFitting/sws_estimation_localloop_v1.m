@@ -14,8 +14,8 @@ function [Raxial,Rlateral,k_axial,k_lateral] = sws_estimation_localloop_v1(s_2D,
     k_lateral = zeros(1,length(ev_al_pos_x));
     mode = 1; %1 for xcorr, 2 for w-k theorem
 
-    for l = 1:length(ev_al_pos_x)
-    % parfor l = 1:length(ev_al_pos_x)
+    % for l = 1:length(ev_al_pos_x)
+    parfor l = 1:length(ev_al_pos_x)
         [Raxial(:,l),Rlateral(:,l), k_axial(:,l),k_lateral(:,l)] = test_reverb_cf(s_2D(:,ev_al_pos_x(l)+search_area_x),dx,dy,mode,correc);
     end
 end

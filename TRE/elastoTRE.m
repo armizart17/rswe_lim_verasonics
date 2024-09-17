@@ -25,6 +25,7 @@ res = 1000*(dx+dz)/2; % promedio entre resoluciones segun z y segun x
 % lambda_cut = 3; % parámetro de filtro para la función filt2
 % type = 'lp';
 nptos = 1;
+% nptos = 5;
 disp("a")
 if nargin<5
     VelF = zeros(size(Vel));

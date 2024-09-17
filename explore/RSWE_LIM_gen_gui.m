@@ -17,7 +17,7 @@ clear all, clc
 close all;
 
 baseDir = 'D:\emirandaz\rswe\data_lim';     %%%% *CHANGE IT IF NEED IT %%%%
-folderAcqName = '05-09' ;                   %%%% *CHANGE IT IF NEED IT %%%%
+folderAcqName = '12-09' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
@@ -50,7 +50,7 @@ fprintf('==============================================================\n');
 freq = str2double( typName(posHz-4:posHz-1) ); % frequency usually represented by 4digits 
 
 %% LOAD DATA AND BMODE VALIDATION
-load(fullfile(dataDir, typName +".mat"));
+% load(fullfile(dataDir, typName +".mat"));
 
 dinf.fc = Trans.frequency*1e6;
 dinf.c0 = 1540; dinf.wl = dinf.c0/dinf.fc;
@@ -108,20 +108,20 @@ f_tol = 50;   % [Hz] tolerance for +/-2*f_tol
 % subplot(122), 
 % imagesc(xdim*1e2, ydim*1e2, angle(Frames0)), title('Phase'), axis("tight"), colormap('default')
 % 
-% figure(), 
-% set(gcf, 'units', 'Normalized', 'Position', [0 0.1 0.45 0.4])
-% sgtitle(['Frames1 ID: ', idName], 'Interpreter', 'none')
-% subplot(121), 
-% imagesc(abs(Frames1)), title('Mang'), axis("tight");
-% % set(gca, "clim", [1, 5])
-% subplot(122), 
-% imagesc(angle(Frames1)), title('Phase'), axis("tight"), colormap('default')
+figure(), 
+set(gcf, 'units', 'Normalized', 'Position', [0 0.1 0.45 0.4])
+sgtitle(['Frames1 ID: ', idName], 'Interpreter', 'none')
+subplot(121), 
+imagesc(abs(Frames1)), title('Mang'), axis("tight");
+% set(gca, "clim", [1, 5])
+subplot(122), 
+imagesc(angle(Frames1)), title('Phase'), axis("tight"), colormap('default')
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SWS ESTIMATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% CALCULATION OF WAVELENGTH
-sws_phantom = 4.5; % asume 4.5m/s
+sws_phantom = 3.5; % asume 4.5m/s
 [wvlength, wvnumber] = calc_wvlength_k(sws_phantom, freq, dinf);
 
 
@@ -139,7 +139,7 @@ visDefault.fact_transparency = 0.6; % Example transparency factor
 methodName = 'CF-LIM';
 
 % Fix to 1.5 wv 
-factCF = 1.5;
+factCF = 1.2;
 win(1) = round(factCF*wvlength.pix_axi); 
 win(2) = round(factCF*wvlength.pix_lat); 
 % Make it odd by adding 1 if it's even
@@ -163,7 +163,7 @@ tt = toc;
 fprintf('Time passed CF %.4f\n', tt)
 
 K_tot = 0.5*(Kx + Kz);
-sws_cf = real(2*pi*freq/K_tot);
+sws_cf = real(2*pi*freq./K_tot);
 sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
@@ -177,4 +177,57 @@ vizCF = vizCF.setUnits('mm');
 
 vizCF.visualize(); % This will plot 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+
+%% TRE UDELAR
+methodName = 'TRE';
+
+% Fix to 1.5 wv 
+factTRE = 1.5;
+win(1) = round(factTRE*wvlength.pix_axi); 
+win(2) = round(factTRE*wvlength.pix_lat); 
+% Make it odd by adding 1 if it's even
+if mod(win(1), 2) == 0
+   win(1) = win(1) + 1; 
+end
+if mod(win(2), 2) == 0
+   win(2) = win(2) + 1; 
+end
+
+u_uru = u;
+
+cut_lambda = 2;
+type = 'lp';
+
+tic 
+[cx,cz,c,VelF] = elastoTRE(u_uru,dinf,cut_lambda,type);
+tt = toc;
+fprintf('Time passed TRE %.4f\n', tt)
+
+cx = medfilt2(cx,[5,5]);
+cz = medfilt2(cz,[5,5]);
+
+figure,
+subplot(211),imagesc(cx),colormap jet;colorbar,
+% set(gca,'clim',[1,10])
+subplot(212),imagesc(cz),colorbar,
+
+
+sws_tre = real( sqrt(cx.^2 + cz.^2 ) ) ;
+sws_tre_big = bigImg(sws_tre, Bmode); % resize to Bmode size
+
+%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+vizTRE = Visualizer(visDefault);
+
+vizTRE = vizTRE.setROI(xdim, ydim, sws_tre_big);
+
+titleName = strcat(methodName, ' ID-', idName);
+vizTRE = vizTRE.setTitle(titleName);
+vizTRE = vizTRE.setUnits('mm');
+
+vizTRE.visualize(); % This will plot 
+%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+
+% [rect_scaled, bin_mask] = vizTRE.selectMetricRec();
+%%
+
 
