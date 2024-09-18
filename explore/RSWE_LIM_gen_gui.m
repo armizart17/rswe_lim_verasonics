@@ -135,6 +135,7 @@ visDefault.caxis_bmode = [-60 0];   % Color axis limits for B-mode
 visDefault.caxis_img = [0 4.5];     % Color axis limits for color (SWS)
 visDefault.fact_transparency = 0.6; % Example transparency factor
 
+%%
 %% CURVE FITTING (CF) "VERSION LIM"
 methodName = 'CF-LIM';
 
@@ -158,7 +159,8 @@ og_size = size(pv_field);
 mirror_pv = padarray(pv_field, (win-1)/2, 'symmetric','both');
 
 tic 
-[Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
+% [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
+[Kx,Kz,Rx,Rz] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
 tt = toc;
 fprintf('Time passed CF %.4f\n', tt)
 
@@ -201,7 +203,7 @@ type = 'lp';
 tic 
 [cx,cz,c,VelF] = elastoTRE(u_uru,dinf,cut_lambda,type);
 tt = toc;
-fprintf('Time passed TRE %.4f\n', tt)
+fprintf('Time passed TRE %.4f s\n', tt)
 
 cx = medfilt2(cx,[5,5]);
 cz = medfilt2(cz,[5,5]);
