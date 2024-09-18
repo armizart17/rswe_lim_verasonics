@@ -19,7 +19,7 @@ clear all, clc
 close all;
 
 baseDir = 'D:\emirandaz\rswe\data_lim\12-09\300_360_400\';     %%%% *CHANGE IT IF NEED IT %%%%
-folderAcqName = '12conc' ;                   %%%% *CHANGE IT IF NEED IT %%%%
+folderAcqName = 'both' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
@@ -141,7 +141,7 @@ visDefault.x = xdim;                % Lateral coordinates
 visDefault.z = ydim;                % Axial coordinates
 visDefault.BmodeFull = Bmode;       % B-mode image data
 visDefault.caxis_bmode = [-60 0];   % Color axis limits for B-mode
-visDefault.caxis_img = [0 6];     % Color axis limits for color (SWS)
+
 visDefault.fact_transparency = 0.6; % Example transparency factor
 
 %% CALCULATION OF WAVELENGTH
@@ -152,8 +152,10 @@ concentrationPhantom = tokens{1}{1};
 switch concentrationPhantom
         case '16conc'
             sws_phantom = 6.2;
+            visDefault.caxis_img = [0 8];     % Color axis limits for color (SWS)
         case '12conc'
             sws_phantom = 5;
+            visDefault.caxis_img = [0 6.5];     % Color axis limits for color (SWS)
         case '10conc'
             sws_phantom = 4;  % You can also choose to average 4 and 5 here if needed
         case '4conc'
