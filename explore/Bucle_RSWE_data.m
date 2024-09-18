@@ -19,7 +19,7 @@ clear all, clc
 close all;
 
 baseDir = 'D:\emirandaz\rswe\data_lim\12-09\300_360_400\';     %%%% *CHANGE IT IF NEED IT %%%%
-folderAcqName = 'both' ;                   %%%% *CHANGE IT IF NEED IT %%%%
+folderAcqName = 'both10-12' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
@@ -158,8 +158,10 @@ switch concentrationPhantom
             visDefault.caxis_img = [0 6.5];     % Color axis limits for color (SWS)
         case '10conc'
             sws_phantom = 4;  % You can also choose to average 4 and 5 here if needed
+            visDefault.caxis_img = [0 6.5];     % Color axis limits for color (SWS)
         case '4conc'
             sws_phantom = 3;
+            isDefault.caxis_img = [0 5.5];     % Color axis limits for color (SWS)
         otherwise
             error('Invalid phantom percentage value.');
 end
@@ -363,7 +365,7 @@ vizCF.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode");
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "Kx", "Kz", "Rx", "Rz", "win");
 
 %% CURVE FITTING (CF) "VERSION EMZ"
 % methodName = 'CF';
