@@ -209,7 +209,7 @@ vizPGLS.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
-
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode");
 %% PHASE GRADIENT L2-noem
 methodName = 'PG-L2';
 stride = 2; % Stride for window-based method
@@ -262,6 +262,7 @@ vizPGL2.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_big", "Bmode");
 
 %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
 methodName = 'PG-TV';
@@ -313,6 +314,8 @@ vizTV.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_tv_big", "Bmode");
+
 
 %% CURVE FITTING (CF) "VERSION LIM"
 methodName = 'CF-LIM';
@@ -360,6 +363,7 @@ vizCF.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode");
 
 %% CURVE FITTING (CF) "VERSION EMZ"
 % methodName = 'CF';
