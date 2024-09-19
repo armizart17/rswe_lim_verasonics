@@ -23,7 +23,7 @@ folderAcqName = 'both10-12' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
-figDir = fullfile(dataDir,'fig0p5wv');
+figDir = fullfile(dataDir,'fig0p75wv');
 
 % figDir = fullfile(dataDir,'fig');
 if ~exist("figDir","dir"); mkdir(figDir); end
@@ -368,7 +368,7 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 methodName = 'CF-LIM';
 
 % Fix to 1.1 wv 
-factCF = 0.5;
+factCF = 0.75;
 win(1) = round(factCF*wvlength.pix_axi); 
 win(2) = round(factCF*wvlength.pix_lat); 
 % Make it odd by adding 1 if it's even
@@ -388,11 +388,12 @@ mirror_pv = padarray(pv_field, (win-1)/2, 'symmetric','both');
 
 tic 
 % [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
-[Kx,Kz,Rx,Rz] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
+[Kx,Kz,Rx,Rz, K1d, R1d] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
 tt = toc;
 fprintf('Time passed for %s: %.4f\n', methodName, tt);
 
-K_tot = 0.5*(Kx + Kz);
+% K_tot = 0.5*(Kx + Kz);
+K_tot = K1d;
 sws_cf = real(2*pi*freq./K_tot);
 sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
 
@@ -410,7 +411,7 @@ vizCF.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "Kx", "Kz", "Rx", "Rz", "win");
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "Kx", "Kz", "Rx", "Rz", "K1d", "R1d", "win");
 
 %% CURVE FITTING (CF) "VERSION EMZ"
 % methodName = 'CF';
