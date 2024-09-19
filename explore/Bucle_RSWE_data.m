@@ -23,7 +23,9 @@ folderAcqName = 'both10-12' ;                   %%%% *CHANGE IT IF NEED IT %%%%
 
 dataDir = fullfile(baseDir, folderAcqName);
 
-figDir = fullfile(dataDir,'fig');
+figDir = fullfile(dataDir,'fig0p5wv');
+
+% figDir = fullfile(dataDir,'fig');
 if ~exist("figDir","dir"); mkdir(figDir); end
 
 fprintf('==============================================================\n');
@@ -171,159 +173,202 @@ disp(concentrationPhantom);
 fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
      sws_phantom, freq, round(wvlength.pix_axi), round(wvlength.pix_lat)  );
 
+%% TRE UDELAR
+% methodName = 'TRE';
+% 
+% u_uru = u;
+% 
+% cut_lambda = 2;
+% type = 'lp';
+% 
+% tic 
+% [cx,cz,c,VelF] = elastoTRE(u_uru,dinf,cut_lambda,type);
+% tt = toc;
+% fprintf('Time passed for %s: %.4f\n', methodName, tt);
+% 
+% cx = medfilt2(cx,[5,5]);
+% cz = medfilt2(cz,[5,5]);
+% 
+% figure,
+% subplot(211),imagesc(cx),colormap jet;colorbar,
+% % set(gca,'clim',[1,10])
+% subplot(212),imagesc(cz),colorbar,
+% 
+% % sws_tre = real( sqrt(cx.^2 + cz.^2 ) ) ;
+% 
+% sws_tre = c;
+% sws_tre_big = bigImg(sws_tre, Bmode); % resize to Bmode size
+% 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizTRE = Visualizer(visDefault);
+% 
+% vizTRE = vizTRE.setROI(xdim, ydim, sws_tre_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizTRE = vizTRE.setTitle(titleName);
+% vizTRE = vizTRE.setUnits('mm');
+% 
+% vizTRE.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% 
+% 
+% nameFig = strcat(methodName, '_',idName);
+% saveas(gcf,fullfile(figDir, nameFig + ".png"));
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "cx", "cz","c", "VelF", "Bmode");
+
 %% PHASE GRADIENT LEAST SQUARES ORIGINAL PAPER
-methodName = 'PG-LS';
-stride = 2; % Stride for window-based method
-% window = 31;
-
-% Fix to 0.75 wv 
-factPG = 0.5;
-window = round(factPG*wvlength.pix_axi); 
-% Make it odd by adding 1 if it's even
-if mod(window, 2) == 0
-   window = window + 1; 
-end
-w_kernel = [window, window];
-
-pv_field = Frames0;  
-og_size = size(pv_field);
-mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
-
-constant = 0.1;
-tic;
-[grad_z,grad_x,k,sws_pg_ls] = phase_estimator_lsq(mirror_frame, w_kernel,freq,dinf,og_size,constant);
-tt = toc;
-fprintf('Time passed for %s: %.4f\n', methodName, tt);
-
-sws_pg_ls_big = bigImg(sws_pg_ls, Bmode); % resize to Bmode size 
-
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-vizPGLS = Visualizer(visDefault);
-
-vizPGLS = vizPGLS.setROI(xdim, ydim, sws_pg_ls_big);
-
-titleName = strcat(methodName, ' ID-', idName);
-vizPGLS = vizPGLS.setTitle(titleName);
-vizPGLS = vizPGLS.setUnits('mm');
-
-vizPGLS.visualize(); % This will plot 
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
-nameFig = strcat(methodName, '_',idName);
-saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode");
-%% PHASE GRADIENT L2-noem
-methodName = 'PG-L2';
-stride = 2; % Stride for window-based method
-% window = 31;
-
-% Fix to 0.75 wv 
-factPG = 0.5;
-window = round(factPG*wvlength.pix_axi); 
-% Make it odd by adding 1 if it's even
-if mod(window, 2) == 0
-   window = window + 1; 
-end
-w_kernel = [window, window];
-
-pv_field = Frames0;  
-og_size = size(pv_field);
-mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
-
-% L2 NORM PG
-tic;
-[grad_l2, size_out] = pg_norm(mirror_frame, w_kernel, dinf, og_size, stride);
-sws_pg = (2*pi*freq)./grad_l2;
-tt = toc;
-fprintf('Time passed for %s: %.4f\n', methodName, tt);
-
-
-% POST-PROCESSING 
-kernel_post = 7;
-
-% AVERAGE FILTER
-% avg_kernel = ones(kernel_post, kernel_post) / kernel_post^2;
-% sws_pg = filter2(avg_kernel, sws_pg, 'same');
-
-% MEDIAN FILTER
-sws_pg = medfilt2(sws_pg,[kernel_post kernel_post],'symmetric');
-
-sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
-
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-vizPGL2 = Visualizer(visDefault);
-
-vizPGL2 = vizPGL2.setROI(xdim, ydim, sws_pg_big);
-
-titleName = strcat(methodName, ' ID-', idName);
-vizPGL2 = vizPGL2.setTitle(titleName);
-vizPGL2 = vizPGL2.setUnits('mm');
-
-vizPGL2.visualize(); % This will plot 
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
-nameFig = strcat(methodName, '_',idName);
-saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_big", "Bmode");
-
-%% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
-methodName = 'PG-TV';
-
-% Fix to 0.5 wv 
-
-window = round(factPG*wvlength.pix_axi); 
-% Make it odd by adding 1 if it's even
-if mod(window, 2) == 0
-   window = window + 1; 
-end
-w_kernel = [window, window];
-
-pv_field = Frames0;  
-og_size = size(pv_field);
-mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
-
-% L2 NORM PG  
-[grad_l2, size_out] = pg_norm(mirror_frame, w_kernel, dinf, og_size, stride);
-sws_pg = (2*pi*freq)./grad_l2;
-sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
-
-% TV Denoising
-mu = 10^4;
-tol = 1e-4;
-M = size_out(1); N = size_out(2);
-
-tic;
-[b_opt] = IRLS_TV_simple(grad_l2(:),speye(M*N),mu,M,N,tol,ones(size(M*N)),ones(M*N,1));
-tt = toc;
-fprintf('Time passed for %s: %.4f\n', methodName, tt);
-
-grad_l2_tv = reshape(b_opt, size(grad_l2));
-sws_pg_tv = (2*pi*freq)./grad_l2_tv;
-
-sws_pg_tv_big = bigImg(sws_pg_tv, Bmode); % resize to Bmode size
-
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-vizTV = Visualizer(visDefault);
-
-vizTV = vizTV.setROI(xdim, ydim, sws_pg_tv_big);
-
-titleName = strcat(methodName, ' ID-', idName);
-vizTV = vizTV.setTitle(titleName);
-vizTV = vizTV.setUnits('mm');
-
-vizTV.visualize(); % This will plot 
-%%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
-nameFig = strcat(methodName, '_',idName);
-saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_tv_big", "Bmode");
+% methodName = 'PG-LS';
+% stride = 2; % Stride for window-based method
+% % window = 31;
+% 
+% % Fix to 0.75 wv 
+% factPG = 0.5;
+% window = round(factPG*wvlength.pix_axi); 
+% % Make it odd by adding 1 if it's even
+% if mod(window, 2) == 0
+%    window = window + 1; 
+% end
+% w_kernel = [window, window];
+% 
+% pv_field = Frames0;  
+% og_size = size(pv_field);
+% mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
+% 
+% constant = 0.1;
+% tic;
+% [grad_z,grad_x,k,sws_pg_ls] = phase_estimator_lsq(mirror_frame, w_kernel,freq,dinf,og_size,constant);
+% tt = toc;
+% fprintf('Time passed for %s: %.4f\n', methodName, tt);
+% 
+% sws_pg_ls_big = bigImg(sws_pg_ls, Bmode); % resize to Bmode size 
+% 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizPGLS = Visualizer(visDefault);
+% 
+% vizPGLS = vizPGLS.setROI(xdim, ydim, sws_pg_ls_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizPGLS = vizPGLS.setTitle(titleName);
+% vizPGLS = vizPGLS.setUnits('mm');
+% 
+% vizPGLS.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% 
+% nameFig = strcat(methodName, '_',idName);
+% saveas(gcf,fullfile(figDir, nameFig + ".png"));
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode");
+% %% PHASE GRADIENT L2-noem
+% methodName = 'PG-L2';
+% stride = 2; % Stride for window-based method
+% % window = 31;
+% 
+% % Fix to 0.75 wv 
+% factPG = 0.5;
+% window = round(factPG*wvlength.pix_axi); 
+% % Make it odd by adding 1 if it's even
+% if mod(window, 2) == 0
+%    window = window + 1; 
+% end
+% w_kernel = [window, window];
+% 
+% pv_field = Frames0;  
+% og_size = size(pv_field);
+% mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
+% 
+% % L2 NORM PG
+% tic;
+% [grad_l2, size_out] = pg_norm(mirror_frame, w_kernel, dinf, og_size, stride);
+% sws_pg = (2*pi*freq)./grad_l2;
+% tt = toc;
+% fprintf('Time passed for %s: %.4f\n', methodName, tt);
+% 
+% 
+% % POST-PROCESSING 
+% kernel_post = 7;
+% 
+% % AVERAGE FILTER
+% % avg_kernel = ones(kernel_post, kernel_post) / kernel_post^2;
+% % sws_pg = filter2(avg_kernel, sws_pg, 'same');
+% 
+% % MEDIAN FILTER
+% sws_pg = medfilt2(sws_pg,[kernel_post kernel_post],'symmetric');
+% 
+% sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
+% 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizPGL2 = Visualizer(visDefault);
+% 
+% vizPGL2 = vizPGL2.setROI(xdim, ydim, sws_pg_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizPGL2 = vizPGL2.setTitle(titleName);
+% vizPGL2 = vizPGL2.setUnits('mm');
+% 
+% vizPGL2.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% 
+% nameFig = strcat(methodName, '_',idName);
+% saveas(gcf,fullfile(figDir, nameFig + ".png"));
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_big", "Bmode");
+% 
+% %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
+% methodName = 'PG-TV';
+% 
+% % Fix to 0.5 wv 
+% 
+% window = round(factPG*wvlength.pix_axi); 
+% % Make it odd by adding 1 if it's even
+% if mod(window, 2) == 0
+%    window = window + 1; 
+% end
+% w_kernel = [window, window];
+% 
+% pv_field = Frames0;  
+% og_size = size(pv_field);
+% mirror_frame = padarray(pv_field,[(window-1)/2 (window-1)/2],'symmetric');
+% 
+% % L2 NORM PG  
+% [grad_l2, size_out] = pg_norm(mirror_frame, w_kernel, dinf, og_size, stride);
+% sws_pg = (2*pi*freq)./grad_l2;
+% sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
+% 
+% % TV Denoising
+% mu = 10^4;
+% tol = 1e-4;
+% M = size_out(1); N = size_out(2);
+% 
+% tic;
+% [b_opt] = IRLS_TV_simple(grad_l2(:),speye(M*N),mu,M,N,tol,ones(size(M*N)),ones(M*N,1));
+% tt = toc;
+% fprintf('Time passed for %s: %.4f\n', methodName, tt);
+% 
+% grad_l2_tv = reshape(b_opt, size(grad_l2));
+% sws_pg_tv = (2*pi*freq)./grad_l2_tv;
+% 
+% sws_pg_tv_big = bigImg(sws_pg_tv, Bmode); % resize to Bmode size
+% 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% vizTV = Visualizer(visDefault);
+% 
+% vizTV = vizTV.setROI(xdim, ydim, sws_pg_tv_big);
+% 
+% titleName = strcat(methodName, ' ID-', idName);
+% vizTV = vizTV.setTitle(titleName);
+% vizTV = vizTV.setUnits('mm');
+% 
+% vizTV.visualize(); % This will plot 
+% %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
+% 
+% nameFig = strcat(methodName, '_',idName);
+% saveas(gcf,fullfile(figDir, nameFig + ".png"));
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_tv_big", "Bmode");
 
 
 %% CURVE FITTING (CF) "VERSION LIM"
 methodName = 'CF-LIM';
 
 % Fix to 1.1 wv 
-factCF = 1.1;
+factCF = 0.5;
 win(1) = round(factCF*wvlength.pix_axi); 
 win(2) = round(factCF*wvlength.pix_lat); 
 % Make it odd by adding 1 if it's even
@@ -439,5 +484,5 @@ save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "K
 % %%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
 
 
-close all;
+% close all;
 end
