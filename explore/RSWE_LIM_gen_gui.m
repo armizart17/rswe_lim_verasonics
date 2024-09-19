@@ -192,7 +192,7 @@ tt = toc;
 fprintf('Time passed CF %.4f\n', tt)
 
 % K_tot = 0.5*(Kx + Kz);
-K_tot = K1d;
+K_tot = R1d;
 sws_cf = real(2*pi*freq./K_tot);
 sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
 

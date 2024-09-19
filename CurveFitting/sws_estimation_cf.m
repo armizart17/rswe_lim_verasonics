@@ -42,7 +42,7 @@ function [Kx, Kz, Rx, Rz, K1d, R1d] = sws_estimation_cf(vz, win, dx, dz, correc)
             sub_vz = vz(ev_al_pos_z(i) + search_area_z, ev_al_pos_x(j) + search_area_x);
             
             % Call local loop function for wavenumber estimation
-            [Raxial, Rlateral, k_axial, k_lateral, R_1d, k_1d] = test_reverb_cf(sub_vz,dx,dz,mode,correc);
+            [Raxial, Rlateral, k_axial, k_lateral, k_1d, R_1d] = test_reverb_cf(sub_vz,dx,dz,mode,correc);
 
             % Store results
             Rx(i, j) = Rlateral;
