@@ -1,5 +1,12 @@
 % SIMPLE SCRIPT 4 GFB BY EMZ
+% Sacar functiones de las otras carpetas
+% phase_estimator_lsq ...... /SWS_PhaseGradient
+% pg_norm ...... /SWS_PhaseGradient
+% IRLS_TV_simple .... /SWS_PhaseGradient
 
+% Cosas cambiar
+% window, Frames0
+% stride = 2
 
 
 %% PHASE GRADIENT LEAST SQUARES ORIGINAL PAPER
@@ -23,7 +30,7 @@ fprintf('Time passed for %s: %.4f\n', methodName, tt);
 figure, 
 imagesc(sws_pg_ls)
 title(methodName)
-%% PHASE GRADIENT L2-noem
+%% PHASE GRADIENT L2-norm
 methodName = 'PG-L2';
 stride = 2; % Stride for window-based method
 % window = 31;
