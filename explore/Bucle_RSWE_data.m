@@ -214,7 +214,7 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 % 
 % nameFig = strcat(methodName, '_',idName);
 % saveas(gcf,fullfile(figDir, nameFig + ".png"));
-% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "cx", "cz","c", "VelF", "Bmode");
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "cx", "cz","c", "VelF", "Bmode","freq");
 
 %% PHASE GRADIENT LEAST SQUARES ORIGINAL PAPER
 % methodName = 'PG-LS';
@@ -256,7 +256,7 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 % 
 % nameFig = strcat(methodName, '_',idName);
 % saveas(gcf,fullfile(figDir, nameFig + ".png"));
-% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode");
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode","freq");
 % %% PHASE GRADIENT L2-noem
 % methodName = 'PG-L2';
 % stride = 2; % Stride for window-based method
@@ -309,7 +309,7 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 % 
 % nameFig = strcat(methodName, '_',idName);
 % saveas(gcf,fullfile(figDir, nameFig + ".png"));
-% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_big", "Bmode");
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_big", "Bmode","freq");
 % 
 % %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
 % methodName = 'PG-TV';
@@ -361,7 +361,7 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 % 
 % nameFig = strcat(methodName, '_',idName);
 % saveas(gcf,fullfile(figDir, nameFig + ".png"));
-% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_tv_big", "Bmode");
+% save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_tv_big", "Bmode","freq");
 
 
 %% CURVE FITTING (CF) "VERSION LIM"
@@ -411,7 +411,7 @@ vizCF.visualize(); % This will plot
 
 nameFig = strcat(methodName, '_',idName);
 saveas(gcf,fullfile(figDir, nameFig + ".png"));
-save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "Kx", "Kz", "Rx", "Rz", "K1d", "R1d", "win");
+save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_cf_big", "Bmode", "Kx", "Kz", "Rx", "Rz", "K1d", "R1d", "win","freq");
 
 %% CURVE FITTING (CF) "VERSION EMZ"
 % methodName = 'CF';
