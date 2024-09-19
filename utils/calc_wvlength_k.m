@@ -21,7 +21,7 @@ function [wavelength, k] = calc_wvlength_k(sws, freq, dinf)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     % Calculate wavelength in meters
-    buc= sws / freq;
+    wavelength.meters = sws / freq;
     
     % Convert wavelength to pixels
     wavelength.pix_axi = round( wavelength.meters / dinf.dz );
