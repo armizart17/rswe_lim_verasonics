@@ -13,7 +13,7 @@ function [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(vz, win, dx , dz, correc)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % If correc is not provided, calculate it using the default value
     if nargin < 5
-        correc = xcorr(ones(win(1), win(2)));
+        correc = xcorr2(ones(win(1), win(2)));
     end
     
     [m,n] = size(vz);

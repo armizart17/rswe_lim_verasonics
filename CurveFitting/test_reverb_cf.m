@@ -1,4 +1,4 @@
-function [R_squeare_real_axial,R_squeare_real_later,k_axial,k_lateral] = test_reverb_cf(M_filtered,res_x,res_y,mode,correc)
+function [R_squeare_real_axial,R_squeare_real_later,k_axial,k_lateral, k_1d, R_squeare_real_1d] = test_reverb_cf(M_filtered,res_x,res_y,mode,correc)
 % function [R_squeare_real_axial,R_squeare_real_later,k_axial,k_lateral] = test_reverb_cf(M_filtered,res_x,res_y,mode,correc)
 
     if mode==1
@@ -61,6 +61,7 @@ function [R_squeare_real_axial,R_squeare_real_later,k_axial,k_lateral] = test_re
     
     R_squeare_real_axial = gof1(1).rsquare;
     R_squeare_real_later = gof2(1).rsquare;
+
     
     k_axial = fitresult1.k;
     k_lateral = fitresult2.k;

@@ -1,10 +1,10 @@
-function [Kx, Kz, Rx, Rz] = sws_estimation_cf(vz, win, dx, dz, correc)
+function [Kx, Kz, Rx, Rz, K1d, R1d] = sws_estimation_cf(vz, win, dx, dz, correc)
 % function [Kx, Kz, Rx, Rz] = sws_estimation_cf(vz, win, dx, dz, correc)
  % Combined function to estimate wavenumber and R-squared values
     % across both axial and lateral directions using parallel processing.
     
     if nargin < 5
-        correc = xcorr(ones(win(1), win(2))); % Default correction if not provided
+        correc = xcorr2(ones(win(1), win(2))); % Default correction if not provided
     end
 
     mode = 1; %1 for xcorr, 2 for w-k theorem
@@ -30,21 +30,27 @@ function [Kx, Kz, Rx, Rz] = sws_estimation_cf(vz, win, dx, dz, correc)
     Rz = zeros(length(al_pos_z), length(al_pos_x));
     Kx = zeros(length(al_pos_z), length(al_pos_x));
     Kz = zeros(length(al_pos_z), length(al_pos_x));
+
+    R1d = zeros(length(al_pos_z), length(al_pos_x));
+    K1d = zeros(length(al_pos_z), length(al_pos_x));
     
     % Double loop across both axial and lateral directions
     for i = 1:length(ev_al_pos_z)
+        % for j = 1:length(ev_al_pos_x)
         parfor j = 1:length(ev_al_pos_x)
             % Extract relevant submatrix from vz for current position
             sub_vz = vz(ev_al_pos_z(i) + search_area_z, ev_al_pos_x(j) + search_area_x);
             
             % Call local loop function for wavenumber estimation
-            [Raxial, Rlateral, k_axial, k_lateral] = test_reverb_cf(sub_vz,dx,dz,mode,correc);
+            [Raxial, Rlateral, k_axial, k_lateral, R_1d, k_1d] = test_reverb_cf(sub_vz,dx,dz,mode,correc);
 
             % Store results
             Rx(i, j) = Rlateral;
             Rz(i, j) = Raxial;
             Kx(i, j) = k_lateral;
             Kz(i, j) = k_axial;
+            R1d(i,j) = R_1d;
+            K1d(i,j) = k_1d;
         end
     end
 end

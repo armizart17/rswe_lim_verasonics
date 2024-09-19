@@ -121,8 +121,32 @@ imagesc(angle(Frames1)), title('Phase'), axis("tight"), colormap('default')
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SWS ESTIMATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% CALCULATION OF WAVELENGTH
-sws_phantom = 3.5; % asume 4.5m/s
+% sws_phantom = 5; % 12%
+tokens = regexp(idName, '(\d+conc)_\d+Hz', 'tokens');
+concentrationPhantom = tokens{1}{1};
+
+switch concentrationPhantom
+        case '16conc'
+            sws_phantom = 6.2;
+            visDefault.caxis_img = [0 8];     % Color axis limits for color (SWS)
+        case '12conc'
+            sws_phantom = 5;
+            visDefault.caxis_img = [0 6.5];     % Color axis limits for color (SWS)
+        case '10conc'
+            sws_phantom = 4;  % You can also choose to average 4 and 5 here if needed
+            visDefault.caxis_img = [0 6.5];     % Color axis limits for color (SWS)
+        case '4conc'
+            sws_phantom = 3;
+            isDefault.caxis_img = [0 5.5];     % Color axis limits for color (SWS)
+        otherwise
+            error('Invalid phantom percentage value.');
+end
 [wvlength, wvnumber] = calc_wvlength_k(sws_phantom, freq, dinf);
+
+disp(concentrationPhantom);
+fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
+     sws_phantom, freq, round(wvlength.pix_axi), round(wvlength.pix_lat)  );
+
 
 
 %% VISUALIZATION SWS IMAGES DEFAULT
@@ -160,11 +184,15 @@ mirror_pv = padarray(pv_field, (win-1)/2, 'symmetric','both');
 
 tic 
 % [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
-[Kx,Kz,Rx,Rz] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
+% [Kx,Kz,Rx,Rz] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
+
+[Kx,Kz,Rx,Rz, K1d, R1d] = sws_estimation_cf(mirror_pv, win, dx, dz, correc); % GILMER
+
 tt = toc;
 fprintf('Time passed CF %.4f\n', tt)
 
-K_tot = 0.5*(Kx + Kz);
+% K_tot = 0.5*(Kx + Kz);
+K_tot = K1d;
 sws_cf = real(2*pi*freq./K_tot);
 sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
 
