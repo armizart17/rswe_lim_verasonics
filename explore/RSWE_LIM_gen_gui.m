@@ -26,7 +26,7 @@ fprintf('Data Directory Path: %s\n', dataDir);
 fprintf('==============================================================\n');
 
 % outDir = ; % for Results 
-%% Setup TypicalName of Data
+% Setup TypicalName of Data
 
 % Wait for the user to load the file before proceeding
 typName = matFileLoader; % NEW ONE
@@ -49,7 +49,7 @@ fprintf('==============================================================\n');
 % Extract the four digits before "Hz"
 freq = str2double( typName(posHz-4:posHz-1) ); % frequency usually represented by 4digits 
 
-%% LOAD DATA AND BMODE VALIDATION
+% LOAD DATA AND BMODE VALIDATION
 % load(fullfile(dataDir, typName +".mat"));
 
 dinf.fc = Trans.frequency*1e6;
@@ -79,7 +79,7 @@ ylabel('\bfAxial [cm]');
 title(['B-mode ID: ', idName], 'Interpreter', 'none', 'FontWeight', 'bold')
 
 
-%% PARTICLE VELOCITY ESTIMATION 
+% PARTICLE VELOCITY ESTIMATION 
 
 [u,dinf] = pv_cal(IQData1,dinf, dinf.num_angles); 
 u = signal_period(freq, dinf.PRFe, u);   
@@ -118,9 +118,13 @@ subplot(122),
 imagesc(angle(Frames1)), title('Phase'), axis("tight"), colormap('default')
 
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SWS ESTIMATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SWS ESTIMATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% CALCULATION OF WAVELENGTH
+
+
+
+
+% CALCULATION OF WAVELENGTH
 % sws_phantom = 5; % 12%
 tokens = regexp(idName, '(\d+conc)_\d+Hz', 'tokens');
 concentrationPhantom = tokens{1}{1};
@@ -144,9 +148,6 @@ end
 [wvlength, wvnumber] = calc_wvlength_k(sws_phantom, freq, dinf);
 
 disp(concentrationPhantom);
-fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
-     sws_phantom, freq, round(wvlength.pix_axi), round(wvlength.pix_lat)  );
-
 
 
 %% VISUALIZATION SWS IMAGES DEFAULT
@@ -156,7 +157,6 @@ visDefault.x = xdim;                % Lateral coordinates
 visDefault.z = ydim;                % Axial coordinates
 visDefault.BmodeFull = Bmode;       % B-mode image data
 visDefault.caxis_bmode = [-60 0];   % Color axis limits for B-mode
-visDefault.caxis_img = [0 4.5];     % Color axis limits for color (SWS)
 visDefault.fact_transparency = 0.6; % Example transparency factor
 
 %%
@@ -186,13 +186,24 @@ tic
 % [Kx,Kz,Rx,Rz] = sws_estimation_curve_fitting(mirror_pv, win, dx , dz, correc);
 % [Kx,Kz,Rx,Rz] = sws_estimation_cf(mirror_pv, win, dx, dz, correc);
 
-[Kx,Kz,Rx,Rz, K1d, R1d] = sws_estimation_cf(mirror_pv, win, dx, dz, correc); % GILMER
+% [Kx,Kz,Rx,Rz, K1d, R1d] = sws_estimation_cf(mirror_pv, win, dx, dz, correc); % GILMER
+[Kx,Kz,Rx,Rz, K1d, R1d] = sws_estimation_cf_fast(mirror_pv, win, dx, dz, correc, og_size); % EMZ
 
 tt = toc;
 fprintf('Time passed CF %.4f\n', tt)
+%%
+figure, 
+axis_k = [0 10*wvnumber];
+subplot(2,3,1), imagesc(real(Kx), axis_k), colorbar, title('Kx')
+subplot(2,3,2), imagesc(real(Kz), axis_k), colorbar, title('Kz')
+subplot(2,3,3), imagesc(real(K1d), axis_k), colorbar, title('Kdeg')
 
+subplot(2,3,4), imagesc(real(Rx)), colorbar, title('Rx')
+subplot(2,3,5), imagesc(real(Rz)), colorbar, title('Rz')
+subplot(2,3,6), imagesc(real(R1d)), colorbar, title('R1d')
+%%
 % K_tot = 0.5*(Kx + Kz);
-K_tot = R1d;
+K_tot = K1d;
 sws_cf = real(2*pi*freq./K_tot);
 sws_cf_big = bigImg(sws_cf, Bmode); % resize to Bmode size
 

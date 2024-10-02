@@ -5,10 +5,10 @@ function [A, P, mat_complex] = amp_phs(u, ct, ct2)
 % Author: Edited by EMZ from LIM repository
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    A = zeros(size(u,1),size(u,2)-1);
-    P = zeros(size(u,1),size(u,2)-1);
+    A = zeros(size(u,1),size(u,2));
+    P = zeros(size(u,1),size(u,2));
     for ii = 1:size(u,1)
-        for jj = 1:size(u,2)-1
+        for jj = 1:size(u,2)
             s1 = squeeze(u(ii,jj,:));
             F1 = fftshift(fft(s1,ct2)); 
     %         M = abs(F1);             % magnitude

@@ -1,4 +1,4 @@
-function sws_matrix = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
+function [sws_matrix,k_z,k_x] = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function sws_matrix = sws_generator(u,window,f_v,d_n,dinf,og_size,est_z,est_x)
 % Function that yields the shear wave speed of a region with the 

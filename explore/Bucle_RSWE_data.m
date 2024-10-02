@@ -170,8 +170,6 @@ end
 [wvlength, wvnumber] = calc_wvlength_k(sws_phantom, freq, dinf);
 
 disp(concentrationPhantom);
-fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
-     sws_phantom, freq, round(wvlength.pix_axi), round(wvlength.pix_lat)  );
 
 %% TRE UDELAR
 % methodName = 'TRE';
@@ -257,7 +255,8 @@ fprintf('SWS %.2f m/s | Freq %d Hz | Kernel size Ax: %d | La: %d \n', ...
 % nameFig = strcat(methodName, '_',idName);
 % saveas(gcf,fullfile(figDir, nameFig + ".png"));
 % save(fullfile(figDir, nameFig)+".mat", "xdim", "ydim", "sws_pg_ls_big", "Bmode","freq");
-% %% PHASE GRADIENT L2-noem
+% %% PHASE GRADIENT L2-norm
+
 % methodName = 'PG-L2';
 % stride = 2; % Stride for window-based method
 % % window = 31;
