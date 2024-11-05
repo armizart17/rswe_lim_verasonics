@@ -73,8 +73,13 @@ source.u_mask = zeros(Nx, Ny);
 numSources = 3;
 
 % Randomly assign sources within the grid (front face only for simplicity)
-source_positions = randi([1 Nx*Ny], 1, numSources); % Random source positions
-source.u_mask(source_positions) = 1;
+% source_positions = randi([1 Nx*Ny], 1, numSources); % Random source positions
+% source.u_mask(source_positions) = 1;
+
+%  Define source locations along the boundaries 
+source.u_mask(1, Ny/2) = 1;           % Left boundary
+source.u_mask(Nx, Ny/2) = 1;          % Right boundary
+source.u_mask(Nx/2, 1) = 1;           % Top boundary
 
 source_freq = 500; % [Hz]
 source_mag = 1;
@@ -91,6 +96,6 @@ input_args = {'DataCast', DATA_CAST};
 sensor_data = pstdElastic2D(kgrid, medium, source, sensor, input_args{:});
 
 %% Save the sensor data
-myfileName = ['SensorData_RSWF_2D_', simuNames{iSim}, '.mat'];
+myfileName = ['RSWF_2D_', simuNames{iSim}, '.mat'];
 save(fullfile(resDir, myfileName), 'sensor_data', 'kgrid', '-v7.3');
 

@@ -142,7 +142,7 @@ colormap('jet')
 colorbar;
 % saveas(fig,'SWS simulated medium - Bottom half.jpg');
 
-saveas(fig, fullfile(resDir,"SWS_simMedium_BottomHalf_"+ simuNames{iSim}+".png"));
+% saveas(fig, fullfile(resDir,"SWS_simMedium_BottomHalf_"+ simuNames{iSim}+".png"));
 
 % Inclusion
 xx = linspace(0,kgrid.x_size,Nx); %% m
@@ -173,11 +173,11 @@ colorbar;
 % saveas(fig,'SWS simulated medium - Inclusion.jpg');
 
 
-saveas(fig, fullfile(resDir,"SWS_simMedium_Inc_"+ simuNames{iSim}+".png"));
+% saveas(fig, fullfile(resDir,"SWS_simMedium_Inc_"+ simuNames{iSim}+".png"));
 
 %%  source
 source.u_mask = zeros(Nx,Ny,Nz);
-numSources = 6;
+numSources = 3;
 
 % Get the surface indices
 surface_indices = [];
@@ -223,7 +223,7 @@ input_args = {'DataCast',DATA_CAST};
 sensor_data = pstdElastic3D(kgrid, medium, source, sensor, input_args{:});
 
 %% save Attempt 1
-myfileName = ['SensorData_RSWF_',simuNames{iSim},'.mat'];
+% myfileName = ['SensorData_RSWF_',simuNames{iSim},'.mat'];
 
 % save all (DEPRECATED
 % save(fullfile(resDir, myfileName), 'sensor_data', 'kgrid', '-v7.3');
