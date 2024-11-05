@@ -1,4 +1,4 @@
-function [M_filtered] = fun_JO_v1(u, freq, dinf)
+function [M_filtered, M_complex] = fun_JO_v1(u, freq, dinf)
 % function [M_filtered] = fun_JO_v1(u, freq, dinf)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple function for phase extraction based on Juvenal Ormachea code
@@ -12,7 +12,7 @@ function [M_filtered] = fun_JO_v1(u, freq, dinf)
 % Author: Edited by EMZ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    % u = u(:,:,50:end);  % usually 50 first frames are corrupted
+    u = u(:,:,50:end);  % usually 50 first frames are corrupted
     freq = freq(1);
     Fs = dinf.PRFe;      % Sampling frequency
 
@@ -45,18 +45,11 @@ function [M_filtered] = fun_JO_v1(u, freq, dinf)
     % cs_max = 4.5;
     Fs1 = 1/dinf.dz;  % Sampling spatial frequency
     Fs2 = 1/dinf.dx;
-
-    %%
+    
     % Spatial frequencies cutoffs estimation base on  the relationship  k=2pi/c
     [k1,k2] = freqspace([a b],'meshgrid');
     k1 = k1*(2*pi*Fs1);
     k2 = k2*(2*pi*Fs2);
-    %%
-
-    figure, 
-    subplot(121), imagesc(k1),title('k1')
-    subplot(122), imagesc(k2),title('k2')
-    %%
     
     r = sqrt(k1.^2 + k2.^2);
     win = fspecial('gaussian',[a b],sigma);

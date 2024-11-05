@@ -1,14 +1,16 @@
-function [M_filtered] = fun_JO_v2(u, freq, dinf)
+function [M_filtered, M_complex] = fun_JO_v2(u, freq, dinf, cs_min, cs_max)
 % function [M_filtered] = fun_JO_v1(u, freq, dinf)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Simple function for phase extraction based on Juvenal Ormachea code
+% CORRECTED filtering items
 % Inputs:  
 %           u           : input particle velocity
 %           freq        : Vibration freqeuncy
 %           dinf        : Frequency range for the bandpass cuttoffs are +-
 %                         2*f_band
 % Outputs: 
-%           M_filtered  : filtered particle velocity signal
+%           M_filtered  : filtered particle velocity signal after spatial 2D pass band
+%           M_complex  :  particle velocity signal before spatial 2D pass band with temp filter
 % Author: Edited by EMZ
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -18,7 +20,7 @@ function [M_filtered] = fun_JO_v2(u, freq, dinf)
 
     [a, b, c] = size(u);
 %     Ts = 1/Fs;                            % Sample time
-    L = 2^nextpow2(c*3);                    % Length of signal
+    L = 2^nextpow2(c*3);                    % Length of signal original is c*3;
     df = Fs/L;                              % frequency resolution
     f1 = (-round(L/2):1:round(L/2)-1)*df;   % frequency axis
     %% Find location of frequencies
@@ -41,32 +43,22 @@ function [M_filtered] = fun_JO_v2(u, freq, dinf)
     sigma = 50; % CHANGE 300;
     %  Breast data
     cs_min = 0.045*(2*pi*freq).^0.25;
-    cs_max = 0.33*(2*pi*freq).^0.35 /2; % I CHANGED THIS TO MAKE IT WORK
+    cs_max = 0.33*(2*pi*freq).^0.35; % I CHANGED THIS TO MAKE IT WORK
     % cs_max = 4.5;
-    Fs1 = 1/dinf.dz;  % Sampling spatial frequency
-    Fs2 = 1/dinf.dx;
 
+    %% FREQSPACE EMZ
+    [Nz, Nx, ~] = size(u);
+    Fs_z = 1/dinf.dz;  % Sampling spatial frequency
+    Fs_x = 1/dinf.dx;
 
-    %%
-[Ny, Nx, ~] = size(u);
+    [KX, KZ] = freqspace([Nz, Nx],'meshgrid'); % [-1 1]
+    KX_m = KX*(Fs_x/2); % [1/m]
+    KZ_m = KZ*(Fs_z/2); % [1/m]
 
-% Define the spatial sampling intervals (assuming equal spacing)
-dx = dinf.dx;  % Example spatial resolution in meters
-dy = dinf.dz;       % Assume square grid for simplicity
-
-% Compute the wavenumber ranges
-kx = (-Nx/2:Nx/2-1) * (2*pi / (Nx * dx));
-ky = (-Ny/2:Ny/2-1) * (2*pi / (Ny * dy));
-
-% Create the wavenumber grid
-[KX, KY] = meshgrid(kx, ky);
-
-
-
-
-%%
+    KX_rad = KX_m*2*pi; % [rad/m]
+    KZ_rad = KZ_m*2*pi; % [rad/m]
     
-    r = sqrt(KX.^2 + KY.^2);
+    r = sqrt(KX_rad.^2 + KZ_rad.^2);
     win = fspecial('gaussian',[a b],sigma);
     win = win ./ max(win(:));  % Make the maximum window value be 1.
     
@@ -74,15 +66,8 @@ ky = (-Ny/2:Ny/2-1) * (2*pi / (Ny * dy));
     cont = 1;
     for ii = freq
         Hd = ones([a b]);
-        Hd1 = ones([a b]);
         kl = (2*pi*ii/cs_max(cont)); kh = (2*pi*ii/cs_min(cont));
         Hd((r<kl)|(r>kh)) = 0;
-        figure, 
-        imagesc( kx, ky, Hd  )
-        xlabel('Kx (rad/m)'), ylabel('Ky (rad/m)')
-        title('Hd'), colorbar;
-        xlim([-20e3, 20e3])
-        ylim([-20e3, 20e3])
         h = fwind2(Hd,win);  % Using the 2-D window, design the filter that best produces the desired frequency response
         M_filtered(:,:,cont) = filter2(h,M_complex(:,:,cont));
         cont = cont+1;

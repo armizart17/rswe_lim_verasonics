@@ -122,8 +122,6 @@ imagesc(angle(Frames1)), title('Phase'), axis("tight"), colormap('default')
 
 
 
-
-
 % CALCULATION OF WAVELENGTH
 % sws_phantom = 5; % 12%
 tokens = regexp(idName, '(\d+conc)_\d+Hz', 'tokens');

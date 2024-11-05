@@ -1,4 +1,4 @@
-function [fu1, Wave_z, Frames1] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
+function [fu1, Wave_z, Frames1, Frames0] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
 % function [fu1, Wave_z, Frames1] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Temporal filtering process of particle velocity signals: a median filter
@@ -13,9 +13,11 @@ function [fu1, Wave_z, Frames1] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
 %           fu1     : wave  
 %           wave_z  : magnitude and phase data after spatial filtering   
 %           Frames1 : only phase data after spatial filtering
+%           Frames0 : before spatial filtering
 % Author: Edited by EMZ from LIM repository
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% TEMPORAL FILTER
     Fs = dinf.PRFe;  % Sampling frequency
     %$  A 50th-order FIR bandpass filter with bandpass [fv-10 dv+10]/Fs cutoffs. 
     ord = 200; % filter order
@@ -29,7 +31,6 @@ function [fu1, Wave_z, Frames1] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
     end
     
     
-    %%
     
     Fs = dinf.PRFe;                        % Sampling frequency
     L = 1e4;                               % Length of signal
@@ -39,21 +40,25 @@ function [fu1, Wave_z, Frames1] = u_filt(u_new, f, f_band, dinf, cs_min, cs_max)
     peak = ix;
     [Frames0,~] = spatial_fil_phase_extrac(fu,peak,L);
     
-    %%
+%% 2D SPATIAL FILTER PASS BAND
     sigma = 300; 
-    Fs1 = 1/dinf.dz;    % Sampling spatial frequency
-    Fs2 = 1/dinf.dx;
+    kl = (2*pi*f/cs_max)*1;
+    kh = (2*pi*f/cs_min)*1;
+    
+    Fs_z = 1/dinf.dz;    % Sampling spatial frequency [px/m]
+    Fs_x = 1/dinf.dx;    % Sampling spatial frequency [px/m]
     
     % Vw1 = squeeze(fu(:,:,5));
     % Spatial frequencies cutoffs estimation base on  the relationship  k=2pi/c 
-    [k1,k2] = freqspace(size(Frames0),'meshgrid');
-    k1 = k1*(2*pi*Fs1);
-    k2 = k2*(2*pi*Fs2);
+    [KX, KZ] = freqspace(size(u_complex),'meshgrid'); % [-1 1]
+    KX_m = KX*(Fs_x/2); % [1/m]
+    KZ_m = KZ*(Fs_z/2); % [1/m]
+
+    KX_rad = KX_m*2*pi; % [rad/m]
+    KZ_rad = KZ_m*2*pi; % [rad/m]
     
     Hd = ones(size(Frames0)); 
-    r = sqrt(k1.^2 + k2.^2);
-    kl = (2*pi*f/cs_max)*2; kh = (2*pi*f/cs_min)*2;
-    
+    r = sqrt(KX_rad.^2 + KZ_rad.^2);   
     Hd((r<kl)|(r>kh)) = 0;
     win = fspecial('gaussian',size(Frames0),sigma); 
     win = win ./ max(win(:));  % Make the maximum window value be 1.

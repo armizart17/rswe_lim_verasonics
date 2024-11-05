@@ -43,6 +43,8 @@ function [grad_abs, size_out] = pg_norm(u, w_kernel, dinf, og_size, stride)
     angle_z = unwrap(angle_u,[],1);
     angle_x = unwrap(angle_u,[],2);
 
+    angle_2d = unwrap_phase(angle_u); % v2
+
     grad_abs = zeros(size_out);
     
     %% NORMAL LOOP
@@ -53,8 +55,20 @@ function [grad_abs, size_out] = pg_norm(u, w_kernel, dinf, og_size, stride)
 
         for jj = 1:st:og_size(2) %% for faster computing pararell toolbox
 
+            % v1
             area_z = angle_z(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1); % Window kernel
             area_x = angle_x(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1); % Window kernel
+
+            % v2 unwrap 2d
+            % area_z = angle_2d(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1); % Window kernel
+            % area_x = angle_2d(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1); % Window kernel
+            
+            % v3 (7secs)
+            % area_z = angle_u(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1); 
+            % area_x = angle_u(ii: ii+w_kernel(1)-1,jj:jj+w_kernel(2)-1);
+            % 
+            % area_z = unwrap(area_z, [], 1);
+            % area_x = unwrap(area_x, [], 2);
 
             diff_area_z = diff(area_z, 1, 1) ./ res_z;
             diff_area_x = diff(area_x, 1, 2) ./ res_x;
