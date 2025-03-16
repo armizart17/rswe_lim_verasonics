@@ -41,6 +41,7 @@ function [fu1, Wave_z, Frames1, Frames0] = u_filt(u_new, f, f_band, dinf, cs_min
     [Frames0,~] = spatial_fil_phase_extrac(fu,peak,L);
     
 %% 2D SPATIAL FILTER PASS BAND
+    u_complex = Frames0; % Feb2025
     sigma = 300; 
     kl = (2*pi*f/cs_max)*1;
     kh = (2*pi*f/cs_min)*1;

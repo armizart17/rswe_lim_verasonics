@@ -15,6 +15,7 @@ function u_complex = temporal_extraction(u,f_v,Fs)
     %freq_range = Fs*(0:ceil(size(u,3)/2))/ceil(size(u,3));
     n = 2^nextpow2(size(u,3)*1  );
     freq_range = linspace(-round(Fs/2),round(Fs/2),n);
+    % freq_range = -Fs/2: Fs/n : Fs/2 - Fs/n;
     index = find_position(f_v,freq_range);
     size_matrix = [size(u,1),size(u,2)];
     u_complex = zeros(size_matrix);
@@ -29,7 +30,9 @@ function u_complex = temporal_extraction(u,f_v,Fs)
                 
                 plot(freq_range,20*log10( abs(u_freq)./abs(max(u_freq)) ),'k','Linewidth',1); 
                 xlabel('Frequency [Hz]'), ylabel('Normalized Magnitude')
+                xlim([-5E3, 5E3])
                 title('Frequency of raw data'), grid on
+                xline(freq_range(index), 'r--')
                 % set(gca,'Fontname','Times')
                 %set(gca,'XTick',scale_x,'XtickLabel',scale_x);
             end

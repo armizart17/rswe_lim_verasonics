@@ -12,7 +12,7 @@
 % idName = 2lay_0500Hz  General Recommended Structure: "typePhatom_freq(4dig)Hz"
 
 addpath(genpath(pwd));
-%% Setup Directories and FolderName
+%% Setup Directories and FolderName and Methods
 clear all, clc
 close all;
 
@@ -26,6 +26,12 @@ fprintf('Data Directory Path: %s\n', dataDir);
 fprintf('==============================================================\n');
 
 % outDir = ; % for Results 
+
+methodCF    = false;
+methodMAOW  = false;
+methodPG_LS = true;
+methodPG_TV = true;
+
 %% Setup TypicalName of Data
 
 typName = input('Enter full name of data (i.e. RSWE_2lay_500Hz): ', 's');
@@ -127,6 +133,8 @@ visDefault.caxis_img = [0 4.5];     % Color axis limits for color (SWS)
 visDefault.fact_transparency = 0.6; % Example transparency factor
 
 %% CURVE FITTING (CF) "VERSION EMZ"
+if methodCF
+
 methodName = 'CF';
 window = 21; 
 w_kernel = [window, window];
@@ -149,8 +157,9 @@ vizCF = vizCF.setUnits('mm');
 
 vizCF.visualize(); % This will plot 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
+end
 %% WAVE APPROXIMATION (MAOW)
+if methodMAOW
 methodName = 'MAOW';
 window = 25; 
 w_kernel = [window, window];
@@ -173,8 +182,9 @@ vizMAOW = vizMAOW.setUnits('mm');
 
 vizMAOW.visualize(); % This will plot 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
+end
 %% PHASE GRADIENT LEAST SQUARES ORIGINAL PAPER
+if methodPG_LS
 methodName = 'PG-LS';
 stride = 2; % Stride for window-based method
 window = 15; 
@@ -200,8 +210,9 @@ vizPGLS = vizPGLS.setUnits('mm');
 
 vizPGLS.visualize(); % This will plot 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
+end
 %% PHASE GRADIENT WITH TOTAL VARIATION (PG-TV)
+if methodPG_TV
 methodName = 'PG-TV';
 
 stride = 2; % Stride for window-based method
@@ -221,7 +232,7 @@ sws_pg_big = bigImg(sws_pg, Bmode); % resize to Bmode size
 mu = 10^4;
 tol = 1e-4;
 M = size_out(1); N = size_out(2);
-[b_opt] = IRLS_TV_simple(grad_l2(:),speye(M*N),mu,M,N,tol,ones(size(M*N)),ones(M*N,1));
+[b_opt] = IRLS_TV(grad_l2(:),speye(M*N),mu,M,N,tol,ones(size(M*N)),ones(M*N,1));
 
 grad_l2_tv = reshape(b_opt, size(grad_l2));
 sws_pg_tv = (2*pi*freq)./grad_l2_tv;
@@ -239,5 +250,5 @@ vizTV = vizTV.setUnits('mm');
 
 vizTV.visualize(); % This will plot 
 %%%%%%%%%%%%%%%%%%%%% VISUALIZE %%%%%%%%%%%%%%%%%%%%%%%
-
+end
 %%
