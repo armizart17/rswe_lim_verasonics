@@ -93,10 +93,20 @@ ydim = linspace(0,dinf.dz*size(Bmode,1),size(Bmode,1));
 
 figure, 
 imagesc(xdim*1e2, ydim*1e2, Bmode), 
-colormap('gray'), 
+colormap('gray'), axis("image")
 xlabel('\bfLateral [cm]'),
 ylabel('\bfAxial [cm]');
 title(['B-mode ID: ', idName], 'Interpreter', 'none', 'FontWeight', 'bold')
+
+
+%%
+figure, 
+imagesc(xdim*1e2, ydim*1e2, pv_field), 
+% colormap('gray'), 
+axis("image")
+xlabel('\bfLateral [cm]'),
+ylabel('\bfAxial [cm]');
+title(['Pv Field JO: ', idName], 'Interpreter', 'none', 'FontWeight', 'bold')
 
 
 %% FAST TEST KMAP
